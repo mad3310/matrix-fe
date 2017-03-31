@@ -14,12 +14,18 @@ var process = require('child_process');
 
 var allPackages = [
     {"app":"le-engine","lang":"zh-cn"},
-    {"app":"le-engine","lang":"en-us"}
+    {"app":"le-engine","lang":"en-us"},
+    {"app":"rds","lang":"zh-cn"},
+    {"app":"rds","lang":"en-us"},
+    {"app":"elasticsearch","lang":"zh-cn"},
+    {"app":"redis","lang":"zh-cn"}
 ];
 
 var allApps=[
         "rds",
-        "le-engine"
+        "le-engine",
+        "elasticsearch",
+        "redis"
     ],
     angularFiles=['angular.js',
         'angular-animate.js',
@@ -45,6 +51,7 @@ gulp.task("require-git-commit-tag", function(){
         console.log("#################################");
         console.log(stdout);
         timestamp= stdout.replace('\n','');
+        timestamp=1475049824958;
     });
 });
 
@@ -118,7 +125,17 @@ gulp.task("font-copy",["image-copy"], function(){
         .pipe(gulp.dest('./build/production/fonts'));
 });
 
-gulp.task("replace-ref",["font-copy"], function(){
+gulp.task("include-copy",["font-copy"], function(){
+    return gulp.src(['./src/include/**/*'])
+        .pipe(gulp.dest('./build/production/include'));
+});
+
+gulp.task("static-copy",["include-copy"], function(){
+    return gulp.src(['./src/static/**/*'])
+        .pipe(gulp.dest('./build/production/static'));
+});
+
+gulp.task("replace-ref",["static-copy"], function(){
         return gulp.src(allApps.map(function (app) {
             return './src/indexs/{app}/index.*'.replace('{app}',app);
         }),{ base: './src' })
